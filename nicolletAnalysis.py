@@ -2,6 +2,7 @@ import os
 import sys
 import gpxpy
 from collections import defaultdict
+from gpxpy.gpx import GPXTrackPoint
 
 # Define intersection coordinates for Nicollet Mall
 INTERSECTIONS = {
@@ -57,7 +58,9 @@ def process_gpx_file(file_path, crossings, stops):
                         speed = calculate_speed(last_point, point)
 
                         for name, coords in INTERSECTIONS.items():
-                            distance = point.distance_2d(gpxpy.geo.Point(*coords))
+                            # Correct creation of an intersection point
+                            intersection_point = GPXTrackPoint(latitude=coords[0], longitude=coords[1])
+                            distance = point.distance_2d(intersection_point)
                             if distance < 30:  # 30 meters proximity to the intersection
                                 if last_intersection and name != last_intersection:
                                     direction = get_direction(last_intersection, name)
