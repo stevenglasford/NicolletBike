@@ -1,0 +1,83 @@
+Nicollet Mall Analysis:
+Total trips on Nicollet Mall: 2521
+
+Northbound crossings
+Grant: 0
+Alice: 0
+12th: 0
+11th: 0
+10th: 0
+9th: 7
+8th: 1
+7th: 2
+6th: 7
+5th: 3
+4th: 0
+3rd: 0
+
+Northbound stops
+Grant: 0
+Percentage of encounters: 0.00%
+Alice: 0
+Percentage of encounters: 0.00%
+12th: 0
+Percentage of encounters: 0.00%
+11th: 0
+Percentage of encounters: 0.00%
+10th: 0
+Percentage of encounters: 0.00%
+9th: 0
+Percentage of encounters: 0.00%
+8th: 0
+Percentage of encounters: 0.00%
+7th: 0
+Percentage of encounters: 0.00%
+6th: 0
+Percentage of encounters: 0.00%
+5th: 0
+Percentage of encounters: 0.00%
+4th: 0
+Percentage of encounters: 0.00%
+3rd: 0
+Percentage of encounters: 0.00%
+
+Southbound crossings
+Grant: 11
+Alice: 22
+12th: 16
+11th: 2
+10th: 1
+9th: 0
+8th: 1
+7th: 12
+6th: 6
+5th: 1
+4th: 0
+3rd: 0
+
+Southbound stops
+Grant: 0
+Percentage of encounters: 0.00%
+Alice: 0
+Percentage of encounters: 0.00%
+12th: 0
+Percentage of encounters: 0.00%
+11th: 0
+Percentage of encounters: 0.00%
+10th: 0
+Percentage of encounters: 0.00%
+9th: 0
+Percentage of encounters: 0.00%
+8th: 0
+Percentage of encounters: 0.00%
+7th: 0
+Percentage of encounters: 0.00%
+6th: 0
+Percentage of encounters: 0.00%
+5th: 0
+Percentage of encounters: 0.00%
+4th: 0
+Percentage of encounters: 0.00%
+3rd: 0
+Percentage of encounters: 0.00%
+
