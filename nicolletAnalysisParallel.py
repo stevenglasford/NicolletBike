@@ -3,6 +3,7 @@ import sys
 import gpxpy
 from collections import defaultdict
 from gpxpy.gpx import GPXTrackPoint
+from geopy.distance import geodesic  # For accurate geodesic distance calculations
 from concurrent.futures import ProcessPoolExecutor
 
 # Define intersection coordinates for Nicollet Mall
@@ -22,17 +23,19 @@ INTERSECTIONS = {
 }
 
 STOP_THRESHOLD = 5  # Speed (km/h) considered as a stop
+INTERSECTION_THRESHOLD = 30  # Distance (meters) for detecting intersections
 
 
 def is_on_nicollet(lat, lon):
-    # Define bounding box for Nicollet Mall
+    """Check if a point is within the bounds of Nicollet Mall."""
     nicollet_lat_range = (44.970, 44.980)
     nicollet_lon_range = (-93.278, -93.273)
     return nicollet_lat_range[0] <= lat <= nicollet_lat_range[1] and nicollet_lon_range[0] <= lon <= nicollet_lon_range[1]
 
 
 def calculate_speed(point1, point2):
-    distance = point1.distance_2d(point2)  # in meters
+    """Calculate the speed between two points."""
+    distance = geodesic((point1.latitude, point1.longitude), (point2.latitude, point2.longitude)).meters
     time_diff = (point2.time - point1.time).total_seconds()  # in seconds
     if time_diff > 0:
         return (distance / time_diff) * 3.6  # Convert m/s to km/h
@@ -40,7 +43,20 @@ def calculate_speed(point1, point2):
 
 
 def get_direction(last_intersection, current_intersection):
+    """Determine the direction of travel based on intersection order."""
     return "Northbound" if INTERSECTIONS[last_intersection][0] < INTERSECTIONS[current_intersection][0] else "Southbound"
+
+
+def get_nearest_intersection(point):
+    """Find the nearest intersection to the given point."""
+    nearest = None
+    min_distance = float('inf')
+    for name, coords in INTERSECTIONS.items():
+        distance = geodesic((point.latitude, point.longitude), coords).meters
+        if distance < min_distance:
+            nearest = name
+            min_distance = distance
+    return nearest, min_distance
 
 
 def process_single_gpx_file(file_path):
@@ -61,18 +77,15 @@ def process_single_gpx_file(file_path):
                 if is_on_nicollet(point.latitude, point.longitude):
                     if last_point:
                         speed = calculate_speed(last_point, point)
+                        nearest, distance = get_nearest_intersection(point)
 
-                        for name, coords in INTERSECTIONS.items():
-                            # Create a GPXTrackPoint for intersection coordinates
-                            intersection_point = GPXTrackPoint(latitude=coords[0], longitude=coords[1])
-                            distance = point.distance_2d(intersection_point)
-                            if distance < 30:  # 30 meters proximity to the intersection
-                                if last_intersection and name != last_intersection:
-                                    direction = get_direction(last_intersection, name)
-                                    crossings[f"{direction[:1].lower()}{name}"] += 1
-                                    if speed < STOP_THRESHOLD:
-                                        stops[f"{direction[:1].lower()}{name}"] += 1
-                                last_intersection = name
+                        if nearest and distance < INTERSECTION_THRESHOLD:
+                            if last_intersection and nearest != last_intersection:
+                                direction = get_direction(last_intersection, nearest)
+                                crossings[f"{direction[:1].lower()}{nearest}"] += 1
+                                if speed < STOP_THRESHOLD:
+                                    stops[f"{direction[:1].lower()}{nearest}"] += 1
+                            last_intersection = nearest
 
                     last_point = point
 
@@ -118,7 +131,7 @@ def main(directory):
                     report.write("Percentage of encounters: 0.00%\n")
             report.write("\n")
 
-    print("Analysis complete! Report saved as 'nicollet_analysis.txt'.")
+    print("Analysis complete! Report saved as 'nicollet_analysis_parallel.txt'.")
 
 
 if __name__ == "__main__":
