@@ -56,6 +56,7 @@ Alice: 0
 3rd: 0
 
 Southbound stops
+<<<<<<< HEAD
 Grant: 0
 Percentage of encounters: 0.00%
 Alice: 0
@@ -68,6 +69,20 @@ Percentage of encounters: 0.00%
 Percentage of encounters: 0.00%
 9th: 0
 Percentage of encounters: 0.00%
+=======
+Grant: 7
+Percentage of encounters: 2.87%
+Alice: 3
+Percentage of encounters: 0.84%
+12th: 13
+Percentage of encounters: 3.29%
+11th: 11
+Percentage of encounters: 2.78%
+10th: 7
+Percentage of encounters: 1.83%
+9th: 2
+Percentage of encounters: 0.57%
+>>>>>>> parent of 5633539 (new output)
 8th: 0
 Percentage of encounters: 0.00%
 7th: 0
