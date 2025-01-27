@@ -106,7 +106,7 @@ def main(directory):
         results = executor.map(process_single_gpx_file, gpx_files)
 
     for result in results:
-        if result:
+        if result:  # Only process valid results
             crossings, stops = result
             total_trips += 1
             for key, value in crossings.items():
@@ -138,7 +138,6 @@ def main(directory):
             report.write("\n")
 
     print("Analysis complete! Report saved as 'nicollet_analysis_parallel.txt'.")
-
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
