@@ -58,16 +58,16 @@ Alice: 357
 Southbound stops
 Grant: 7
 Percentage of encounters: 2.87%
-Alice: 3
-Percentage of encounters: 0.84%
-12th: 13
-Percentage of encounters: 3.29%
+Alice: 2
+Percentage of encounters: 0.56%
+12th: 12
+Percentage of encounters: 3.04%
 11th: 11
 Percentage of encounters: 2.78%
 10th: 7
 Percentage of encounters: 1.83%
-9th: 2
-Percentage of encounters: 0.57%
+9th: 1
+Percentage of encounters: 0.28%
 8th: 0
 Percentage of encounters: 0.00%
 7th: 0
