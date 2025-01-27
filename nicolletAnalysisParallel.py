@@ -2,7 +2,6 @@ import os
 import sys
 import gpxpy
 from collections import defaultdict
-from gpxpy.gpx import GPXTrackPoint
 from geopy.distance import geodesic
 from concurrent.futures import ProcessPoolExecutor
 
@@ -66,33 +65,38 @@ def process_single_gpx_file(file_path):
     stops = defaultdict(int)
     valid_trip = False
 
-    with open(file_path, 'r') as gpx_file:
-        gpx = gpxpy.parse(gpx_file)
+    try:
+        with open(file_path, 'r') as gpx_file:
+            gpx = gpxpy.parse(gpx_file)
 
-    last_point = None
-    last_intersection = None
+        last_point = None
+        last_intersection = None
 
-    for track in gpx.tracks:
-        for segment in track.segments:
-            for point in segment.points:
-                if is_on_nicollet(point.latitude, point.longitude):
-                    valid_trip = True  # Mark the trip as valid
-                    if last_point:
-                        speed = calculate_speed(last_point, point)
-                        nearest, distance = get_nearest_intersection(point)
+        for track in gpx.tracks:
+            for segment in track.segments:
+                for point in segment.points:
+                    if is_on_nicollet(point.latitude, point.longitude):
+                        valid_trip = True  # Mark the trip as valid
+                        if last_point:
+                            speed = calculate_speed(last_point, point)
+                            nearest, distance = get_nearest_intersection(point)
 
-                        if nearest and distance < INTERSECTION_THRESHOLD:
-                            if last_intersection and nearest != last_intersection:
-                                direction = get_direction(last_intersection, nearest)
-                                crossings[f"{direction[:1].lower()}{nearest}"] += 1
-                                # Detect stops
-                                if speed < STOP_THRESHOLD or (speed - calculate_speed(point, last_point)) > SLOWDOWN_THRESHOLD:
-                                    stops[f"{direction[:1].lower()}{nearest}"] += 1
-                            last_intersection = nearest
+                            if nearest and distance < INTERSECTION_THRESHOLD:
+                                if last_intersection and nearest != last_intersection:
+                                    direction = get_direction(last_intersection, nearest)
+                                    crossings[f"{direction[:1].lower()}{nearest}"] += 1
+                                    # Detect stops
+                                    if speed < STOP_THRESHOLD or (speed - calculate_speed(point, last_point)) > SLOWDOWN_THRESHOLD:
+                                        stops[f"{direction[:1].lower()}{nearest}"] += 1
+                                last_intersection = nearest
 
-                    last_point = point
+                        last_point = point
 
-    return (crossings, stops) if valid_trip else (None, None)
+    except Exception as e:
+        print(f"Error processing file {file_path}: {e}")
+        return defaultdict(int), defaultdict(int)  # Return empty results on error
+
+    return crossings, stops if valid_trip else (defaultdict(int), defaultdict(int))
 
 
 def main(directory):
@@ -106,7 +110,7 @@ def main(directory):
         results = executor.map(process_single_gpx_file, gpx_files)
 
     for crossings, stops in results:
-        if crossings is not None:  # Only process valid trips
+        if any(crossings.values()):  # Only process valid trips
             total_trips += 1
             for key, value in crossings.items():
                 all_crossings[key] += value
