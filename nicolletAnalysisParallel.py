@@ -138,15 +138,3 @@ def main(directory):
             report.write("\n")
 
     print("Analysis complete! Report saved as 'nicollet_analysis_parallel.txt'.")
-
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python nicolletAnalysis.py <directory containing gpx files>")
-        sys.exit(1)
-
-    gpx_directory = sys.argv[1]
-    if not os.path.isdir(gpx_directory):
-        print(f"Error: {gpx_directory} is not a valid directory.")
-        sys.exit(1)
-
-    main(gpx_directory).
