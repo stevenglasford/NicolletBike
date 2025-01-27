@@ -64,20 +64,19 @@ def process_single_gpx_file(file_path):
     """Process a single GPX file and return its results."""
     crossings = defaultdict(int)
     stops = defaultdict(int)
+    valid_trip = False
 
     with open(file_path, 'r') as gpx_file:
         gpx = gpxpy.parse(gpx_file)
 
     last_point = None
     last_intersection = None
-    direction = None
-    processed = False  # Track if any point is on Nicollet Mall
 
     for track in gpx.tracks:
         for segment in track.segments:
             for point in segment.points:
                 if is_on_nicollet(point.latitude, point.longitude):
-                    processed = True  # Mark file as valid for processing
+                    valid_trip = True  # Mark the trip as valid
                     if last_point:
                         speed = calculate_speed(last_point, point)
                         nearest, distance = get_nearest_intersection(point)
@@ -86,13 +85,14 @@ def process_single_gpx_file(file_path):
                             if last_intersection and nearest != last_intersection:
                                 direction = get_direction(last_intersection, nearest)
                                 crossings[f"{direction[:1].lower()}{nearest}"] += 1
+                                # Detect stops
                                 if speed < STOP_THRESHOLD or (speed - calculate_speed(point, last_point)) > SLOWDOWN_THRESHOLD:
                                     stops[f"{direction[:1].lower()}{nearest}"] += 1
                             last_intersection = nearest
 
                     last_point = point
 
-    return crossings, stops if processed else None
+    return (crossings, stops) if valid_trip else (None, None)
 
 
 def main(directory):
@@ -105,9 +105,8 @@ def main(directory):
     with ProcessPoolExecutor() as executor:
         results = executor.map(process_single_gpx_file, gpx_files)
 
-    for result in results:
-        if result:  # Only process valid results
-            crossings, stops = result
+    for crossings, stops in results:
+        if crossings is not None:  # Only process valid trips
             total_trips += 1
             for key, value in crossings.items():
                 all_crossings[key] += value
